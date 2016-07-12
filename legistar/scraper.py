@@ -556,12 +556,11 @@ class LegistarScraper (object):
     data = urllib.urlencode(data)
     response = br.open(self._legislation_uri, data)
 
-    try:
-      # Check for the link to the advanced search form
-      br.find_link(text_regex='.*Simple.*')
-
-    except mechanize.LinkNotFoundError:
-      # If it's not there, then we're already on the advanced search form.
+    # Check for the link back to the simple search form
+    br.select_form('aspnetForm')
+    ctl = br.form.find_control('ctl00$ContentPlaceHolder1$btnSwitch')
+    if 'Simple' not in ctl.value:
+      # If it's not there, then we're not on the advanced search form.
       raise ValueError('Not on the advanced search page')
 
 
